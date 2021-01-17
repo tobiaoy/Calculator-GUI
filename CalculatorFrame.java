@@ -1,4 +1,6 @@
-package Atwo;
+
+
+
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -10,11 +12,13 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 
 public class CalculatorFrame extends JFrame {
 
 	public JTextArea display;
 	private boolean newValue; 
+	JScrollPane scroll;
 	
 	private double lastNumber;
 	private String lastOperator = new String("");
@@ -39,11 +43,9 @@ public class CalculatorFrame extends JFrame {
 		
 		public void actionPerformed(ActionEvent event) {
 			
-			if (newValue) {
-				newValue = false;
-			}
 			curVal += digit;
 			System.out.printf("Digit is : %s; Value in the text area is %s, Cur Val = %s \n", digit, display.getText(), curVal);
+			
 			display.setText(display.getText() + digit);
 		}
 	}
@@ -57,40 +59,36 @@ public class CalculatorFrame extends JFrame {
 		}
 		
 		public void actionPerformed(ActionEvent event) {
-			
-			if (newValue) {
-				newValue = false;
-			}
-			
-			
-			
-				// Check if LAst operator is empty or calculate
+				// Check if Last operator is empty or calculate
 				if (lastOperator.isEmpty()) {
 					//move current value to array
 					lastNumber = Double.parseDouble(curVal);
 				}
 				else {
-					lastNumber = calclateWithOper(lastNumber,Double.parseDouble(curVal),lastOperator);	
+					lastNumber = calclateWithOper(lastNumber,Double.parseDouble(curVal),lastOperator);
+					if (!mOper.equals("=")){
+					display.setText(display.getText() +"=\n"+lastNumber);	
+					lastOperator = "";						
+					}
+
 					//display.setText(display.getText() + "\n"+lastNumber);
 					//curVal = String.valueOf(lastNumber);
 				}
 				
 				//Set Current value to empty
-				if (lastOperator == "=" ) {
-				   display.setText(display.getText() + mOper+"\n"+lastNumber);
+				if (mOper.equals("=")) {
+				   display.setText(display.getText() + mOper+"\n"+lastNumber +"\n");
+				   lastOperator = "";
+				   //curVal = "0";
 
 				}
 				else {
-					display.setText(display.getText() + mOper+"\n");	
-				  
-					 if (!(lastOperator.equals("="))&& curVal== "0") {
-						display.setText(display.getText() +"=\n"+lastNumber);
+					display.setText(display.getText() + mOper+"\n");
+					lastOperator = mOper;	
 
 					}
-					//else {
-					//}
-				}
-				lastOperator = mOper;
+				
+				
 				curVal = "0";
 				
 		}
@@ -154,14 +152,53 @@ public class CalculatorFrame extends JFrame {
 			break;
 		case "/":
 			// check for divide by 0
+			if (b == 0) {
+				display.append("\n ERROR! \n");
+			}
+			else
 			result = a/b;
 			break;
 		case "*":
 			result = a*b;
 			break;
 		case "=":
-			result = a; // A is the last number
+			result = a ; // A is the last number
 			break;
+		case ".":
+			{
+				if(display.getText().isEmpty())
+				{
+					// SHOW ERROR ! CANT BE EMPty !
+				}
+				else
+				{
+					int lengthOfdisplay = display.getText().length();
+					if(lengthOfdisplay > 1)
+					{
+						char theLastchar = display.getText().charAt(lengthOfdisplay-1);
+						char oneBeforelastchar = display.getText().charAt(lengthOfdisplay-2);
+						if(!Character.isDigit(theLastchar))
+						{
+							display.append("\n ERROR! \n");
+							// DO THIS ....
+						}
+						else
+						{
+							// ADD THE DOT ( . )s
+							display.append(".");
+						}
+					}
+					else
+					{
+						// OK if length is not bigger than 1 that means we could have number in display so
+						// we add the dot
+						// ADD THE DOT
+						// for other signs you should have something like this always check if display is empty
+					}
+				}
+
+
+			}
 		}
 		return result;
 	}
@@ -208,7 +245,7 @@ public class CalculatorFrame extends JFrame {
 		buttons.add(OperatorButton("*"));
 		
 		buttons.add(DigitButton("0"));
-		buttons.add(DigitButton("."));
+		buttons.add(OperatorButton("."));
 		buttons.add(OperatorButton("="));
 		buttons.add(OperatorButton("/"));
 		
@@ -232,15 +269,23 @@ public class CalculatorFrame extends JFrame {
 		
 		newValue = true;
 		
-		display = new JTextArea("");
+		display = new JTextArea(""); 
+		//display.setAlignmentX(JTextArea.RIGHT_ALIGNMENT);
+		//display.setAlignmentY(JTextArea.BOTTOM_ALIGNMENT);
 		add(display, BorderLayout.CENTER);
-		display.setVisible(true);
+		scroll = new JScrollPane(display, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		add(scroll);
 		
-		
+		 
 		setSize(FRAME_WIDTH, FRAME_HEIGHT);
+		setResizable(false);
 		
 	}
+		//public static void main(String [] args) {
+		
+		//JFrame frame = new CalculatorFrame();
+	    //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    //frame.setTitle("Calculator");
+	    //frame.setVisible(true);
+	//}
 	}
-	
-
-
