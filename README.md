@@ -1,2 +1,2 @@
 # Calculator-GUI
-A set of java files to make a GUI calculator
+A calculator with a graphical user interface made using java swing.
